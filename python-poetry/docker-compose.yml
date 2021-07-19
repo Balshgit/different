@@ -10,5 +10,5 @@ services:
     volumes:
       - ./poetry/:/poetry/
     command: >
-      bash -c "cp /code/pypoetry.toml poetry.lock /poetry -r
-      && sleep 5"
+      bash -c "cp /code/* /poetry -r
+      && sleep 3"
