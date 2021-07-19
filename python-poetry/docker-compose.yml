@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  python:
+    image: poetry-python:latest
+    container_name: 'poetry-python'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./poetry/:/poetry/
+    command: >
+      bash -c "cp /code/pypoetry.toml poetry.lock /poetry -r
+      && sleep 5"
