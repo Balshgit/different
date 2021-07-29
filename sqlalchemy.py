@@ -175,3 +175,12 @@ def db_insert_announce(author, bot_announce):
                                                     created=get_now(3)
                                                     )
         conn.execute(insert_statement)
+
+
+# usage:
+
+# db_insert_or_update(chat_id='417070387', nickname='Balsh', name='Dmitry', telephone='23432432')
+# print(db_get_contact_number('417070387'))
+# db_insert_reply_message(chat_id='1660356916', reply_message='asdasd')
+# db_update_location(chat_id='1660356916', location='lsdkjfldskj')
+# print(db_get_id('417070387'))
