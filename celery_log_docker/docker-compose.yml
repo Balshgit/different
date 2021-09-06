@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+version: "3.7"
+
+networks:
+  # Network for your internals, use it by default:
+  telebot_network:
+    name:
+      celery_log_network
+    ipam:
+      config:
+        - subnet: 200.20.0.0/24
+
+services:
+
+  rabbitmq:
+    hostname: rabbitmq_host
+    image: rabbitmq:3.8.18-management-alpine
+    container_name: celery_rabbit
+    env_file: config/.env
+    restart: unless-stopped
+    networks:
+      telebot_network:
+        ipv4_address: 200.20.0.11
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  web:
+    image: "celery_log"
+    container_name: celery_log_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/code
+    networks:
+      telebot_network:
+        ipv4_address: 200.20.0.12
+    env_file: ./config/.env
+    command: >
+      bash -c "celery --app=main:app worker --concurrency=1 --loglevel=info --logfile=celery.log"
+
+  worker:
+    container_name: celery_log_worker
+    image: "celery_log"
+    command: >
+      bash -c "celery --app=main:app worker --concurrency=1 --loglevel=info --logfile=celery.log"
+    env_file: config/.env
+    volumes:
+      - .:/code
+    depends_on:
+      - rabbitmq
+      - web
+    restart: unless-stopped
+    networks:
+      telebot_network:
+        ipv4_address: 200.20.0.14
+
+
+

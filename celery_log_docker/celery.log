@@ -1,0 +1,143 @@
+[2021-09-06 17:05:09,677: ERROR/MainProcess] consumer: Cannot connect to amqp://rabbit_admin:**@rabbitmq_host:5672//: [Errno 111] Connection refused.
+Trying again in 2.00 seconds... (1/100)
+
+[2021-09-06 17:05:11,684: ERROR/MainProcess] consumer: Cannot connect to amqp://rabbit_admin:**@rabbitmq_host:5672//: [Errno 111] Connection refused.
+Trying again in 4.00 seconds... (2/100)
+
+[2021-09-06 17:05:15,699: INFO/MainProcess] Connected to amqp://rabbit_admin:**@rabbitmq_host:5672//
+[2021-09-06 17:05:15,705: INFO/MainProcess] mingle: searching for neighbors
+[2021-09-06 17:05:16,728: INFO/MainProcess] mingle: all alone
+[2021-09-06 17:05:16,741: INFO/MainProcess] celery@5885d9799983 ready.
+[2021-09-06 17:06:10,637: INFO/MainProcess] Task main.test[8fc376db-1752-4dfc-a9b3-94d5b4a53524] received
+[2021-09-06 17:06:10,637: INFO/ForkPoolWorker-1] WE ARE HERE
+[2021-09-06 17:06:10,637: WARNING/ForkPoolWorker-1] 4
+[2021-09-06 17:06:10,638: WARNING/ForkPoolWorker-1] 
+
+[2021-09-06 17:06:10,638: INFO/ForkPoolWorker-1] 4
+[2021-09-06 17:06:10,651: INFO/ForkPoolWorker-1] Task main.test[8fc376db-1752-4dfc-a9b3-94d5b4a53524] succeeded in 0.013417366000794573s: 4
+[2021-09-06 17:07:11,945: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py", line 326, in start
+    blueprint.start(self)
+  File "/usr/local/lib/python3.8/site-packages/celery/bootsteps.py", line 116, in start
+    step.start(parent)
+  File "/usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py", line 618, in start
+    c.loop(*c.loop_args())
+  File "/usr/local/lib/python3.8/site-packages/celery/worker/loops.py", line 81, in asynloop
+    next(loop)
+  File "/usr/local/lib/python3.8/site-packages/kombu/asynchronous/hub.py", line 361, in create_loop
+    cb(*cbargs)
+  File "/usr/local/lib/python3.8/site-packages/kombu/transport/base.py", line 235, in on_readable
+    reader(loop)
+  File "/usr/local/lib/python3.8/site-packages/kombu/transport/base.py", line 217, in _read
+    drain_events(timeout=0)
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 523, in drain_events
+    while not self.blocking_read(timeout):
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 529, in blocking_read
+    return self.on_inbound_frame(frame)
+  File "/usr/local/lib/python3.8/site-packages/amqp/method_framing.py", line 53, in on_frame
+    callback(channel, method_sig, buf, None)
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 535, in on_inbound_method
+    return self.channels[channel_id].dispatch_method(
+  File "/usr/local/lib/python3.8/site-packages/amqp/abstract_channel.py", line 143, in dispatch_method
+    listener(*args)
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 664, in _on_close
+    self._x_close_ok()
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 679, in _x_close_ok
+    self.send_method(spec.Connection.CloseOk, callback=self._on_close_ok)
+  File "/usr/local/lib/python3.8/site-packages/amqp/abstract_channel.py", line 57, in send_method
+    conn.frame_writer(1, self.channel_id, sig, args, content)
+  File "/usr/local/lib/python3.8/site-packages/amqp/method_framing.py", line 183, in write_frame
+    write(view[:offset])
+  File "/usr/local/lib/python3.8/site-packages/amqp/transport.py", line 352, in write
+    self._write(s)
+ConnectionResetError: [Errno 104] Connection reset by peer
+[2021-09-06 17:07:11,947: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:361: CPendingDeprecationWarning: 
+In Celery 5.1 we introduced an optional breaking change which
+on connection loss cancels all currently executed tasks with late acknowledgement enabled.
+These tasks cannot be acknowledged as the connection is gone, and the tasks are automatically redelivered back to the queue.
+You can enable this behavior using the worker_cancel_long_running_tasks_on_connection_loss setting.
+In Celery 5.1 it is set to False by default. The setting will be set to True by default in Celery 6.0.
+
+  warnings.warn(CANCEL_TASKS_BY_DEFAULT, CPendingDeprecationWarning)
+
+[2021-09-06 17:07:19,647: ERROR/MainProcess] consumer: Cannot connect to amqp://rabbit_admin:**@rabbitmq_host:5672//: [Errno 111] Connection refused.
+Trying again in 2.00 seconds... (1/100)
+
+[2021-09-06 17:07:20,045: ERROR/MainProcess] consumer: Cannot connect to amqp://rabbit_admin:**@rabbitmq_host:5672//: [Errno 111] Connection refused.
+Trying again in 2.00 seconds... (1/100)
+
+[2021-09-06 17:07:21,654: ERROR/MainProcess] consumer: Cannot connect to amqp://rabbit_admin:**@rabbitmq_host:5672//: [Errno 111] Connection refused.
+Trying again in 4.00 seconds... (2/100)
+
+[2021-09-06 17:07:22,053: ERROR/MainProcess] consumer: Cannot connect to amqp://rabbit_admin:**@rabbitmq_host:5672//: [Errno 111] Connection refused.
+Trying again in 4.00 seconds... (2/100)
+
+[2021-09-06 17:07:25,684: INFO/MainProcess] Connected to amqp://rabbit_admin:**@rabbitmq_host:5672//
+[2021-09-06 17:07:25,710: INFO/MainProcess] mingle: searching for neighbors
+[2021-09-06 17:07:26,079: INFO/MainProcess] Connected to amqp://rabbit_admin:**@rabbitmq_host:5672//
+[2021-09-06 17:07:26,098: INFO/MainProcess] mingle: searching for neighbors
+[2021-09-06 17:07:26,739: INFO/MainProcess] mingle: all alone
+[2021-09-06 17:07:26,782: INFO/MainProcess] celery@2f1496df298b ready.
+[2021-09-06 17:07:27,128: INFO/MainProcess] mingle: all alone
+[2021-09-06 17:07:27,174: INFO/MainProcess] celery@265915b3bb4d ready.
+[2021-09-06 17:07:42,029: INFO/MainProcess] Task main.test[7e78bcba-0161-45b9-b7bf-05bc9a532a46] received
+[2021-09-06 17:07:42,029: INFO/ForkPoolWorker-1] WE ARE HERE
+[2021-09-06 17:07:42,030: WARNING/ForkPoolWorker-1] 4
+[2021-09-06 17:07:42,030: WARNING/ForkPoolWorker-1] 
+
+[2021-09-06 17:07:42,030: INFO/ForkPoolWorker-1] 4
+[2021-09-06 17:07:42,043: INFO/ForkPoolWorker-1] Task main.test[7e78bcba-0161-45b9-b7bf-05bc9a532a46] succeeded in 0.01332545499826665s: 4
+[2021-09-06 17:08:05,780: INFO/MainProcess] Task main.test[85d97d31-2029-41c6-a576-50ba61240007] received
+[2021-09-06 17:08:05,781: INFO/ForkPoolWorker-1] WE ARE HERE
+[2021-09-06 17:08:05,781: WARNING/ForkPoolWorker-1] 4
+[2021-09-06 17:08:05,781: WARNING/ForkPoolWorker-1] 
+
+[2021-09-06 17:08:05,781: INFO/ForkPoolWorker-1] 4
+[2021-09-06 17:08:05,795: INFO/ForkPoolWorker-1] Task main.test[85d97d31-2029-41c6-a576-50ba61240007] succeeded in 0.013929769000242231s: 4
+[2021-09-06 17:13:37,692: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py", line 326, in start
+    blueprint.start(self)
+  File "/usr/local/lib/python3.8/site-packages/celery/bootsteps.py", line 116, in start
+    step.start(parent)
+  File "/usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py", line 618, in start
+    c.loop(*c.loop_args())
+  File "/usr/local/lib/python3.8/site-packages/celery/worker/loops.py", line 81, in asynloop
+    next(loop)
+  File "/usr/local/lib/python3.8/site-packages/kombu/asynchronous/hub.py", line 361, in create_loop
+    cb(*cbargs)
+  File "/usr/local/lib/python3.8/site-packages/kombu/transport/base.py", line 235, in on_readable
+    reader(loop)
+  File "/usr/local/lib/python3.8/site-packages/kombu/transport/base.py", line 217, in _read
+    drain_events(timeout=0)
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 523, in drain_events
+    while not self.blocking_read(timeout):
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 529, in blocking_read
+    return self.on_inbound_frame(frame)
+  File "/usr/local/lib/python3.8/site-packages/amqp/method_framing.py", line 53, in on_frame
+    callback(channel, method_sig, buf, None)
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 535, in on_inbound_method
+    return self.channels[channel_id].dispatch_method(
+  File "/usr/local/lib/python3.8/site-packages/amqp/abstract_channel.py", line 143, in dispatch_method
+    listener(*args)
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 664, in _on_close
+    self._x_close_ok()
+  File "/usr/local/lib/python3.8/site-packages/amqp/connection.py", line 679, in _x_close_ok
+    self.send_method(spec.Connection.CloseOk, callback=self._on_close_ok)
+  File "/usr/local/lib/python3.8/site-packages/amqp/abstract_channel.py", line 57, in send_method
+    conn.frame_writer(1, self.channel_id, sig, args, content)
+  File "/usr/local/lib/python3.8/site-packages/amqp/method_framing.py", line 183, in write_frame
+    write(view[:offset])
+  File "/usr/local/lib/python3.8/site-packages/amqp/transport.py", line 352, in write
+    self._write(s)
+ConnectionResetError: [Errno 104] Connection reset by peer
+[2021-09-06 17:13:37,693: WARNING/MainProcess] /usr/local/lib/python3.8/site-packages/celery/worker/consumer/consumer.py:361: CPendingDeprecationWarning: 
+In Celery 5.1 we introduced an optional breaking change which
+on connection loss cancels all currently executed tasks with late acknowledgement enabled.
+These tasks cannot be acknowledged as the connection is gone, and the tasks are automatically redelivered back to the queue.
+You can enable this behavior using the worker_cancel_long_running_tasks_on_connection_loss setting.
+In Celery 5.1 it is set to False by default. The setting will be set to True by default in Celery 6.0.
+
+  warnings.warn(CANCEL_TASKS_BY_DEFAULT, CPendingDeprecationWarning)
+
