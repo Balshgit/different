@@ -13,25 +13,30 @@ def func_exec_count(func):
     return new_func
 
 
-def execution_time(func):
-    @wraps(func)
-    def exec_func(*args, **kwargs):
-        now = datetime.now()
-        func_result = func(*args, **kwargs)
-        end = datetime.now()
-        print('time to execute', (end - now).seconds)
-        return func_result
-    return exec_func
+def execution_time(time_form='sec'):
+    multiply = {'sec': 1, 'min': 60, 'hour': 3600}
+
+    def wrapper(func):
+        @wraps(func)
+        def new_func(*args, **kwargs):
+            begin = datetime.now()
+            result = func(*args, **kwargs)
+            end = datetime.now()
+            exec_time = (end - begin).seconds / multiply[time_form]
+            print(f'Duration, {time_form}: {exec_time}')
+            return result
+        return new_func
+    return wrapper
 
 
 @func_exec_count
-@execution_time
+@execution_time()
 def summary(x: int, y: int) -> int:
     z = x + y
     return z
 
 
-@execution_time
+@execution_time(time_form='min')
 def main():
     result = 0
     for i in range(1, 11):
