@@ -1,6 +1,5 @@
-import datetime
 from functools import wraps
-from datetime import datetime
+import time
 
 
 def func_exec_count(func):
@@ -19,10 +18,10 @@ def execution_time(time_form='sec'):
     def wrapper(func):
         @wraps(func)
         def new_func(*args, **kwargs):
-            begin = datetime.now()
+            begin = time.time()
             result = func(*args, **kwargs)
-            end = datetime.now()
-            exec_time = (end - begin).seconds / multiply[time_form]
+            end = time.time()
+            exec_time = (end - begin) / multiply[time_form]
             print(f'Duration, {time_form}: {exec_time}')
             return result
         return new_func
@@ -30,16 +29,16 @@ def execution_time(time_form='sec'):
 
 
 @func_exec_count
-@execution_time()
+# @execution_time()
 def summary(x: int, y: int) -> int:
     z = x + y
     return z
 
 
-@execution_time(time_form='min')
+@execution_time(time_form='sec')
 def main():
     result = 0
-    for i in range(1, 11):
+    for i in range(1, 10**7):
         result += summary(i, 100)
         print(result)
     print(summary.count, summary.__name__)
