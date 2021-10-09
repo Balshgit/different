@@ -5,7 +5,7 @@ description = "my bot for telegram"
 authors = ["Dmitry Afanasyev <Balshbox@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8.5"
+python = "3.9.7"
 telebot = "0.0.4"
 psycopg2-binary = "^2.8"
 python-decouple = "^3.3"

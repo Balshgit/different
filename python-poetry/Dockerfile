@@ -29,14 +29,16 @@ RUN apt update \
   && export TERM=xterm \
   # Installing `poetry` package manager:
   # https://github.com/python-poetry/poetry
-  && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - \
-  && poetry --version
+  && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
 
 COPY ./pyproject.toml /code/
 
 WORKDIR /code
 
-RUN poetry lock && poetry export -f requirements.txt --output requirements.txt
+RUN export PATH="/root/.local/bin:$PATH" \
+  && poetry --version \
+  && poetry lock \
+  && poetry export -f requirements.txt --output requirements.txt
 
 WORKDIR /poetry
 
