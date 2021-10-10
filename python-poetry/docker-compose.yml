@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   python:
-    image: poetry-python:latest
+    image: "poetry-python:latest"
     container_name: 'poetry-python'
     build:
       context: .

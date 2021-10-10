@@ -38,7 +38,7 @@ WORKDIR /code
 RUN export PATH="/root/.local/bin:$PATH" \
   && poetry --version \
   && poetry lock \
-  && poetry export -f requirements.txt --output requirements.txt
+  && poetry export -f requirements.txt --without-hashes --output requirements.txt
 
 WORKDIR /poetry
 
