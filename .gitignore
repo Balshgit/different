@@ -246,5 +246,5 @@ artifacts/
 # ipython:
 .ipython/
 
-.poetry/
+poetry/
 
