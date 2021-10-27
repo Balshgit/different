@@ -51,7 +51,14 @@ EMAIL_HOST_PASSWORD=
 EMAIL_PORT=
 EMAIL_USE_SSL=
 EMAIL_USE_TLS=
+
+# ===== Google Recapthca =====
+
+GOOGLE_RECAPTCHA_SECRET_KEY=
+GOOGLE_RECAPTCHA_SECRET_SITE_KEY=
 ```
+
+
 
 ## To urls.py
 
@@ -63,3 +70,7 @@ url_patterns
     path('admin/login/', login_required(lambda request: redirect('accounts/login/', permanent=True),
                                         redirect_field_name='admin/login/?next=')),
 
+
+## Add Google reCaptcha
+
+https://evileg.com/uk/post/283/

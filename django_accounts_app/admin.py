@@ -9,7 +9,7 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
     list_display = ('username', 'email', 'first_name', 'last_name', 'mobile', 'verification_code',
-                    'is_superuser', 'is_staff', 'is_active', )
+                    'is_superuser', 'is_staff', 'is_active', 'activation_token', )
 
     list_filter = ('username', 'first_name', 'last_name', 'user_created', 'is_superuser', 'is_staff', 'is_active', )
 

@@ -93,7 +93,6 @@ body {
 </style>
 <div class="signup-form">
     <form method="post">
-		<h2>Sign Up</h2>
 		<p>Please fill in this form to create an account!</p>
 		<hr>
         {% csrf_token %}
@@ -131,9 +130,8 @@ body {
           {% if form.mobile.value %}
           <input type="text" class="form-control" name="mobile" value="{{ form.mobile.value }}">
           {% else %}
-        	<input id="mobile" type="row" class="form-control" name="mobile" placeholder="Mobile" >
+        	<input id="mobile" type="row" class="form-control" name="mobile" placeholder="Mobile (Not required)">
           {% endif %}
-           <label for="mobile">Not required</label>
           <div class="form-group">{{ form.mobile.errors }}</div>
         </div>
 		<div class="form-group">
@@ -144,9 +142,17 @@ body {
           <div class="form-group">{{ form.password2.errors }}</div>
     </div>
 
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <div class="form-group g-recaptcha" data-sitekey="6LcaYfgcAAAAAEX1GE9myoMEA2xVhWOrXqKUke_j"></div>
+      {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+
 		<div class="form-group">
             <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
-        </div>
+    </div>
       <div class="form-group">{{ form.non_field_errors }}</div>
     </form>
 	<div class="hint-text">Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></div>

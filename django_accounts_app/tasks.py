@@ -10,7 +10,6 @@ def mail_send(to_email: str, subject: str, text_content: str = '', **kwargs) -> 
     username = kwargs.get('username')
     from_email = settings.DEFAULT_FROM_EMAIL
 
-    msg_html = render_to_string('registration/message.html',
-                                {'username': username})
+    msg_html = render_to_string('registration/message.html', {'username': username, 'text_content': text_content})
 
-    send_mail(subject, text_content, from_email, [to_email], html_message=msg_html, fail_silently=False)
+    send_mail(subject, '', from_email, [to_email], html_message=msg_html, fail_silently=False)
