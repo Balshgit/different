@@ -53,9 +53,11 @@ EMAIL_USE_TLS=
 
 ## To urls.py
 
-    from health_check import urls as health_urls
+from server.apps.accounts import urls as accounts_urls
 
 url_patterns
 
     path('accounts/', include(accounts_urls)),
+    path('admin/login/', login_required(lambda request: redirect('accounts/login/', permanent=True),
+                                        redirect_field_name='admin/login/?next=')),
 

@@ -1,6 +1,6 @@
-from server.apps.accounts.models import CustomUser, CustomGroup
+from server.apps.accounts.models import CustomUser
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin, GroupAdmin, Group
+from django.contrib.auth.admin import UserAdmin
 
 
 @admin.register(CustomUser)
@@ -38,11 +38,3 @@ class CustomUserAdmin(UserAdmin):
 
     search_fields = ('username', 'first_name', 'last_name', 'mobile', 'email')
     filter_horizontal = ('groups', 'user_permissions',)
-
-
-admin.site.unregister(Group)
-
-
-@admin.register(CustomGroup)
-class CustomGroupAdmin(GroupAdmin):
-    ...

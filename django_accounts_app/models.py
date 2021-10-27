@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import AbstractUser
 from .managers import CustomUserManager
 
 
@@ -18,9 +18,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
-class CustomGroup(Group):
-    class Meta:
-        verbose_name = 'Permissions group'
-        verbose_name_plural = 'Permissions groups'
