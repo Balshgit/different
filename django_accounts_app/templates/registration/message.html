@@ -2,7 +2,9 @@
 <body>
   <div>
     <p style="color: green">Добро пожаловать, {{username}}!</p>
+    {% if text_content %}
     <p style="color: green">Чтобы активировать учётную запись перейдите по ссылке:
       <a href="{{text_content}}">Завершить регистрацию</a></p>
+    {% endif %}
   </div>
 </body>

@@ -18,6 +18,7 @@ from server.settings.components import config
 
 ACCOUNT_ACTIVATION_DAYS = 2
 EMAIL_TIMEOUT = 20
+CONFIRM_REGISTRATION_BY_EMAIL = True
 
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)

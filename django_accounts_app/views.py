@@ -7,9 +7,9 @@ from server.apps.accounts.forms import CustomUserCreationForm
 from server.apps.accounts.models import CustomUser
 from django.core.validators import validate_email
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 
-# Create your views here.
 def dashboard(request: HttpRequest) -> HttpResponse:
     return render(request, "users/dashboard.html", {})
 
@@ -38,8 +38,13 @@ class RegisterUser(CreateView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         if self.request.recaptcha_is_valid:
-            form.save()
+            user = form.save()
             validate_email(form.instance.email)
-            message = 'Please check your email for continue registration'
-            return render(self.request, 'registration/info.html', {'message': message})
+            if settings.CONFIRM_REGISTRATION_BY_EMAIL:
+                message = 'Please check your email for continue registration'
+                return render(self.request, 'registration/info.html', {'message': message})
+            else:
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                login(self.request, user)
+                return redirect('admin:index')
         return render(self.request, 'users/register.html', self.get_context_data())

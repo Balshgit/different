@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "users/base.html" %}
 
 {% block content %}
 
@@ -104,9 +104,11 @@ body {
           <input type="text" class="form-control" name="username" placeholder="Username" required="required">
           {% endif %}
         </div>
+      <div class="form-group">{{ form.username.errors }}</div>
 		<div class="form-group">
             <input type="password" class="form-control" name="password" placeholder="Password" required="required">
         </div>
+      <div class="form-group">{{ form.password.errors }}</div>
 		<div class="form-group">
             <button type="submit" class="btn btn-primary btn-lg">Login</button>
         </div>
