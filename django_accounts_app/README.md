@@ -2,6 +2,8 @@
 
 ##*Add to settings.py*
 
+    AUTH_USER_MODEL = 'accounts.CustomUser'
+
     LOGIN_REDIRECT_URL = '/admin/'
     LOGOUT_REDIRECT_URL = '/accounts/login/'
 
