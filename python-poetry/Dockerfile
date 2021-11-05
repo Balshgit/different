@@ -28,8 +28,9 @@ RUN apt update \
     nano \
   && export TERM=xterm \
   # Installing `poetry` package manager:
-  # https://github.com/python-poetry/poetry
-  && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+#  # https://github.com/python-poetry/poetry
+#  && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+  && pip install poetry
 
 COPY ./pyproject.toml /code/
 
