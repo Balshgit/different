@@ -10,7 +10,7 @@ from urllib3.exceptions import MaxRetryError
 
 logger.remove()
 logger.add(sink=sys.stdout, colorize=True, level='DEBUG',
-           format="<cyan>{time}</cyan> | <level>{level}</level> | "
+           format="<cyan>{time:YYYY.MM.DD HH:mm:ss}</cyan> | <level>{level}</level> | "
                   "<magenta>{message}</magenta>")
 
 opt = options.Options()
@@ -33,7 +33,7 @@ if __name__ == '__main__':
             driver.get("https://www.twitch.tv/lol4to22")
 
             logger.info('you have 60 seconds to login')
-            time.sleep(10)
+            time.sleep(60)
             logger.info('time for login is up')
         except Exception as e:
             logger.error(f'Open page exception: {e}')
