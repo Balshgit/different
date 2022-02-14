@@ -1,4 +1,4 @@
-FROM python:3.10.2
+FROM python:3.9.10
 
 # python:
 ENV PYTHONFAULTHANDLER=1 \
@@ -40,8 +40,10 @@ WORKDIR /code
 RUN export PATH="/root/.local/bin:$PATH" \
   && poetry --version \
   && poetry lock \
-  && poetry export -f requirements.txt --without-hashes --output requirements.txt
+  && poetry export -f requirements.txt --without-hashes --output requirements.txt \
+  && poetry install
 
 WORKDIR /poetry
+
 
 
