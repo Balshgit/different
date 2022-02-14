@@ -1,4 +1,4 @@
-FROM python:3.7.9
+FROM python:3.10.2
 
 # python:
 ENV PYTHONFAULTHANDLER=1 \
@@ -10,7 +10,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
   # poetry:
-  POETRY_VERSION=1.1.11 \
+  POETRY_VERSION=1.1.13 \
   POETRY_NO_INTERACTION=1 \
   POETRY_VIRTUALENVS_CREATE=false \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
@@ -30,6 +30,7 @@ RUN apt update \
   # Installing `poetry` package manager:
 #  # https://github.com/python-poetry/poetry
 #  && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+  && pip install --upgrade pip \
   && pip install poetry
 
 COPY ./pyproject.toml /code/
