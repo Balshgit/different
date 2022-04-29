@@ -1,13 +1,10 @@
 import importlib.util
 import logging
 import sys
-
-from decouple import AutoConfig
 from pathlib import Path
 
-current_dir = Path(__file__).parent.parent
-config = AutoConfig(search_path=current_dir.joinpath('get_project_core'))
 
+current_dir = Path(__file__).parent.parent
 
 # use loguru if it is possible for color output
 if importlib.util.find_spec('loguru') is not None:

@@ -1,12 +1,15 @@
 import json  # noqa # pylint: disable=unused-import
 import subprocess
+import sys
 import time
 
 import requests
 
-from get_project_core.settings import logger, config, current_dir
+from get_project_core.settings import current_dir, logger
 
-headers = {'PRIVATE-TOKEN': config('X5_SCM_TOKEN', cast=str)}
+GITLAB_TOKEN = ''
+
+headers = {'PRIVATE-TOKEN': GITLAB_TOKEN}
 
 
 def create_repositories(group_id: int):
@@ -36,5 +39,13 @@ def update_submodules():
 
 
 if __name__ == '__main__':
-    create_repositories(group_id=3574)
-    # update_submodules()
+    args = sys.argv[1:]
+    try:
+        group = args[0]
+        logger.info(group)
+        create_repositories(group_id=int(group))
+        update_submodules()
+    except IndexError:
+        logger.error('Gitlab group id must be set')
+    except ValueError:
+        logger.error('Gitlab group id must be integer')
