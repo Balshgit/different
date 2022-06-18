@@ -40,8 +40,7 @@ WORKDIR /code
 RUN export PATH="/root/.local/bin:$PATH" \
   && poetry --version \
   && poetry lock \
-  && poetry export -f requirements.txt --without-hashes --output requirements.txt \
-  && poetry install
+  && poetry export -f requirements.txt --without-hashes --output requirements.txt
 
 WORKDIR /poetry
 

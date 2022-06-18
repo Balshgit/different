@@ -138,6 +138,6 @@ class NetScanner:
 
 
 server_checker = NetScanner(200, console_logger)
-urls = ['https://httpbin.org/delay/10' for _ in range(3000)]
+urls = ['https://httpbin.org/delay/10' for _ in range(2000)]
 available_urls = server_checker.ping_servers(urls, timeout=15)
 console_logger.info(f'Ping result: {Counter(available_urls).most_common(2)}')
