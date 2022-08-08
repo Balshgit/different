@@ -79,31 +79,27 @@ def configure_firefox_driver(private_window: bool = False) -> WebDriver:
 
 
 def parse_site() -> str:
+    driver.get(
+        'https://yandex.ru/maps/213/moscow/stops/stop__9640740/?l=masstransit&ll=37.527754%2C55.823507&tab=overview&z=21'
+    )
+    time.sleep(4)
+    elements = driver.find_elements(by='class name', value='masstransit-vehicle-snippet-view')
 
-        download_gecko_driver()
-        driver = configure_firefox_driver()
+    bus_300, bus_t19 = None, None
+    bus_300_arrival, bus_t19_arrival = None, None
 
-        driver.get(
-            'https://yandex.ru/maps/213/moscow/stops/stop__9640740/?l=masstransit&ll=37.527754%2C55.823507&tab=overview&z=21'
-        )
-        time.sleep(4)
-        elements = driver.find_elements(by='class name', value='masstransit-vehicle-snippet-view')
-
-        bus_300, bus_t19 = None, None
-        bus_300_arrival, bus_t19_arrival = None, None
-
-        for element in elements:
-            try:
-                bus_300 = element.find_element(by='css selector', value='[aria-label="300"]')
-                bus_300_arrival = element.find_element(by='class name', value='masstransit-prognoses-view__title-text')
-            except NoSuchElementException:
-                pass
-            try:
-                bus_t19 = element.find_element(by='css selector', value='[aria-label="т19"]')
-                bus_t19_arrival = element.find_element(by='class name', value='masstransit-prognoses-view__title-text')
-            except NoSuchElementException:
-                pass
-        return f'{bus_300.text} - {bus_300_arrival.text}\n{bus_t19.text} - {bus_t19_arrival.text}'
+    for element in elements:
+        try:
+            bus_300 = element.find_element(by='css selector', value='[aria-label="300"]')
+            bus_300_arrival = element.find_element(by='class name', value='masstransit-prognoses-view__title-text')
+        except NoSuchElementException:
+            pass
+        try:
+            bus_t19 = element.find_element(by='css selector', value='[aria-label="т19"]')
+            bus_t19_arrival = element.find_element(by='class name', value='masstransit-prognoses-view__title-text')
+        except NoSuchElementException:
+            pass
+    return f'{bus_300.text} - {bus_300_arrival.text}\n{bus_t19.text} - {bus_t19_arrival.text}'
 
 
 @dp.message_handler()
@@ -138,6 +134,8 @@ async def on_shutdown(dp):
 
 
 if __name__ == '__main__':
+    download_gecko_driver()
+    driver = configure_firefox_driver()
     start_webhook(
         dispatcher=dp,
         webhook_path=WEBHOOK_PATH,
