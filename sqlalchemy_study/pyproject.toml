@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "sqlalchemy_study_project"
+version = "1.0.1"
+description = "for study sqlalchemy async models"
+authors = ["Dmitry Afanasyev <Balshbox@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+SQLAlchemy = "^1.4"
+SQLAlchemy-Utils = "^0.38.2"
+pydantic = {version = "^1.9.1", extras = ["email"]}
+factory-boy = "^3.2.1"
+Faker = "^15.0.0"
+loguru = "^0.6.0"
+alembic = "^1.8.0"
+python-dotenv = "^0.20.0"
+asyncpg = "^0.27.0"
+asyncmy = "^0.2.5"
+PyMySQL = "^1.0.2"
+cryptography = "^37.0.2"
+psycopg2-binary = "^2.9.3"
+
+[tool.poetry.dev-dependencies]
+ipython = "^8.4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

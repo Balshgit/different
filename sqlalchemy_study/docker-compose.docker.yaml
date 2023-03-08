@@ -1,0 +1,39 @@
+version: '3.9'
+
+networks:
+  sqlalchemy_study_network:
+    name: "sqlalchemy_study_network"
+    ipam:
+      config:
+        - subnet: 200.20.0.0/24
+
+
+services:
+  db:
+    networks:
+      sqlalchemy_study_network:
+        ipv4_address: 200.20.0.12
+
+  app:
+    container_name: "sqlalchemy_study_app"
+    image: "sqlalchemy_study:latest"
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      args:
+        USER: root
+    restart: unless-stopped
+    networks:
+      sqlalchemy_study_network:
+        ipv4_address: 200.20.0.10
+    env_file: ./src/config/.env
+    environment:
+      DB_HOST: db
+    depends_on:
+      - db
+    command: >
+      bash -c "/app/scripts/docker-entrypoint.sh
+      && /app/scripts/alembic-init-migrate.sh && python data/fill_data.py
+      && sleep infinity"
+    volumes:
+      - ./src:/app/src/

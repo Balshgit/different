@@ -1,0 +1,23 @@
+version: '3.9'
+
+
+volumes:
+  sqlalchemy_study_db_data:
+    name: "sqlalchemy_study_db_data"
+
+services:
+
+  db:
+    image: postgres:14.6
+    container_name: "sqlalchemy_study_db"
+    hostname: 'db_host'
+    restart: unless-stopped
+    volumes:
+      - sqlalchemy_study_db_data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    env_file: ./src/config/.env
+    expose:
+      - '5433'
+    ports:
+      - '5433:5433'
+    command: -p 5433

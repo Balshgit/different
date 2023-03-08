@@ -1,0 +1,29 @@
+version: '3.9'
+
+
+volumes:
+  sqlalchemy_study_db_data:
+    name: "sqlalchemy_study_db_data"
+
+services:
+
+  db:
+    image: mysql:8.0.31
+    platform: linux/amd64
+    container_name: "sqlalchemy_study_db"
+    hostname: 'db_host'
+    volumes:
+      - sqlalchemy_study_db_data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    env_file: ./src/config/.env
+    environment:
+      MYSQL_TCP_PORT: 3307
+    restart: unless-stopped
+    expose:
+      - '3307'
+    ports:
+      - '3307:3307'
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
