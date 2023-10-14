@@ -2,7 +2,7 @@ import asyncio
 import re
 import sys
 from logging import Logger
-from multiprocessing import Process
+from multiprocessing import Process, Lock
 from typing import Any
 
 import httpx
@@ -155,22 +155,24 @@ class DockerHubScanner:
 
         return services_tags
 
-    def print_data(self, service_name: str, service_component: dict[str, str]) -> None:
+    def print_data(self, service_name: str, service_component: dict[str, str], lock: Lock) -> None:
 
         component_name = service_component['name']
         component_version = service_component['version']
 
         data = self.get_data(service_name, service_component)
-        print(
-            f"Service: {colored(service_name, color='light_grey')}",
-            f"\nComponent: {colored(component_name, color='light_blue')}",
-            f"\nLatest tags: {colored(str(data[component_name]), color='magenta')}",
-            f"\nCurrent version: {colored(component_version, color='cyan')}",
-        )
 
-        if data[component_name][0] > component_version:
-            print(f"New version of {component_name}: {colored(data[component_name][0], color='yellow')}")
-        print()
+        with lock:
+            print(
+                f"Service: {colored(service_name, color='light_grey')}",
+                f"\nComponent: {colored(component_name, color='light_blue')}",
+                f"\nLatest tags: {colored(str(data[component_name]), color='magenta')}",
+                f"\nCurrent version: {colored(component_version, color='cyan')}",
+            )
+
+            if data[component_name][0] > component_version:
+                print(f"New version of {component_name}: {colored(data[component_name][0], color='yellow')}")
+            print()
 
     async def _async_request(self, client: AsyncClient, url: str) -> dict[str, Any] | None:
 
@@ -201,7 +203,9 @@ class DockerHubScanner:
 
 if __name__ == '__main__':
 
-    print('Services'.center(50, '-'), '\n')
+    print(colored('Services'.center(50, '-', ), color='white'), '\n')
+
+    global_lock = Lock()
 
     dockerhub_scanner = DockerHubScanner()
     processes = []
@@ -212,10 +216,13 @@ if __name__ == '__main__':
                 continue
             process = Process(
                 target=dockerhub_scanner.print_data,
-                kwargs={'service_name': service, 'service_component': component}
+                kwargs={'service_name': service, 'service_component': component, 'lock': global_lock}
             )
             processes.append(process)
             process.start()
 
-    for process in processes:
-        process.join()
+        for process in processes:
+            process.join()
+
+    print(colored("All jobs done", color='white'))
+
