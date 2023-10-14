@@ -166,15 +166,15 @@ class GoodGame:
     def sync_counter(self) -> str:
         page = 1
 
-        resp = requests.get(f'{self.BASE_URL}?page={page}')
-        streams = resp.json()['streams']
+        response = requests.get(f'{self.BASE_URL}?page={page}', timeout=2)
+        streams = response.json()['streams']
         for stream in streams:
             self.all_streams.update({stream['id']: stream})
         max_current_viewers = streams[0]['viewers']
         while streams:
             page += 1
-            resp = requests.get(f'{self.BASE_URL}?page={page}')
-            streams = resp.json()['streams']
+            response = requests.get(f'{self.BASE_URL}?page={page}')
+            streams = response.json()['streams']
             for stream in streams:
                 self.all_streams.update({stream['id']: stream})
         return self.__prepare_result(max_current_viewers)
@@ -184,17 +184,18 @@ if __name__ == '__main__':
     print("-" * 76)
     good_game = GoodGame()
     start = time.time()
-    async_process = Process(
-        target=good_game.async_counter, args=(), kwargs={}, name='async_process'
-    )
-    sync_process = Process(
-        target=good_game.sync_counter, args=(), kwargs={}, name='sync_process'
-    )
+    good_game.async_counter()
+    # async_process = Process(
+    #     target=good_game.async_counter, args=(), kwargs={}, name='async_process'
+    # )
+    # sync_process = Process(
+    #     target=good_game.sync_counter, args=(), kwargs={}, name='sync_process'
+    # )
 
-    async_process.start()
-    sync_process.start()
+    # sync_process.start()
+    # async_process.start()
+    # sync_process.join()
+    # async_process.join()
 
-    async_process.join()
-    sync_process.join()
     stop = time.time()
     logger.info(f'End all processes. Execution time: {round(stop-start, 2)} seconds')

@@ -10,19 +10,47 @@ from httpx import AsyncHTTPTransport, AsyncClient
 from packaging.version import parse as parse_version
 from termcolor import colored
 
-SERVICES = {
-    'nextcloud': '25.0.4',
-    'gitea/gitea': '1.18.5',
-    'caddy': '2.6.4',
-    'mediawiki': '1.39.2',
-    'bitwarden/server': '2023.2.0',
-    'redis': '7.0.8',
-    'nginx': '1.23.3',
-    'mariadb': '10.11.2',
-    'postgres': '15.2',
-    'mysql': '8.0.32',
-    'selenoid/firefox': '110.0',
-    'python': '3.11.1',
+SERVICES: dict[str: dict[str, Any]] = {
+    'general': {
+        'components': [
+            {'name': 'caddy', 'version': '2.7.5'},
+            {'name': 'python', 'version': '3.11.5'},
+        ]
+    },
+    'nextcloud': {
+        'components': [
+            {'name': 'nextcloud', 'version': '27.1.2'},
+            {'name': 'mysql', 'version': '8.1.0'},
+            {'name': 'redis', 'version': '7.2.1'},
+            {'name': 'nginx', 'version': '1.25.2'},
+            {'name': 'onlyoffice/documentserver', 'version': '7.3.3.50'},
+        ],
+    },
+    'gitea': {
+        'components': [
+            {'name': 'gitea/gitea', 'version': '1.20.5'},
+            {'name': 'postgres', 'version': '15.4'},
+        ],
+    },
+    'mediawiki': {
+        'components': [
+            {'name': 'mediawiki', 'version': '1.40.1'},
+            {'name': 'mariadb', 'version': '11.1.2'},
+        ],
+    },
+    'bitwarden': {
+        'components': [
+            {'name': 'bitwarden/web', 'version': '2023.9.1'},
+            {'name': 'bitwarden/server', 'version': '2023.9.0'},
+        ],
+    },
+    'mosgortrans': {
+        'deprecated': True,
+        'components': [
+            {'name': 'selenoid/chrome', 'version': '111.0'},
+            {'name': 'aerokube/selenoid', 'version': '1.10.10'},
+        ],
+    },
 }
 
 
@@ -57,15 +85,103 @@ logger = configure_logger()
 
 
 class DockerHubScanner:
+    """Url server examples:
+    bitwarden/server
+    https://hub.docker.com/v2/namespaces/bitwarden/repositories/server/tags?page=2
 
-    # bitwarden/server
-    # https://hub.docker.com/v2/namespaces/bitwarden/repositories/server/tags?page=2
-
-    # caddy
-    # https://registry.hub.docker.com/v2/repositories/library/caddy/tags?page=1
+    caddy
+    https://registry.hub.docker.com/v2/repositories/library/caddy/tags?page=1
+    """
 
     DOCKERHUB_REGISTRY_API = 'https://registry.hub.docker.com/v2/repositories/library'
     DOCKERHUB_API = 'https://hub.docker.com/v2/namespaces'
+
+    async def get_tags(self, service_name: str, service_component: dict[str, str]) -> dict[str, list[str]]:
+        """
+        To make method really async it should be rewritten on pages not by get next page each time.
+        Also, dockerhub protected from bruteforce requests.
+        Better with getting next page each time
+        """
+        component_name = service_component['name']
+        component_version = service_component['version']
+
+        url = self._docker_hub_api_url(component_name)
+        all_tags = []
+        transport = AsyncHTTPTransport(retries=1)
+        async with AsyncClient(transport=transport) as client:
+            payload = await self._async_request(client=client, url=url)
+
+            if not payload:
+                return {component_name: all_tags}
+
+            next_page, tags = self._get_next_page_and_tags_from_payload(payload)
+
+            all_tags.extend(tags)
+
+            while component_version not in all_tags:
+                if not next_page:
+                    break
+                payload = await self._async_request(client=client, url=next_page)
+                next_page, tags = self._get_next_page_and_tags_from_payload(payload)
+                all_tags.extend(tags)
+
+            # filter tags contains versions 1.18.3 and not contains letters 1.18.3-fpm-alpine. Sort by version number
+            tags = sorted(
+                list(
+                    filter(
+                        lambda t: re.search(r'\d+\.\d', t) and not re.search(r'[a-z]', t),
+                        all_tags,
+                    )
+                ),
+                reverse=True,
+                key=parse_version,
+            )
+
+            # Do not show older versions than current in tags
+            try:
+                tags = tags[:tags.index(component_version) + 1]
+            except ValueError:
+                tags = tags[:3]
+                logger.error(
+                    f"cant find tag {component_version} for service {service_name}"
+                    f"for component {component_name}"
+                )
+        return {component_name: tags}
+
+    def get_data(self, service_name: str, service_component: dict[str, str]) -> dict[str, list[str]]:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        services_tags = loop.run_until_complete(self.get_tags(service_name, service_component))
+
+        return services_tags
+
+    def print_data(self, service_name: str, service_component: dict[str, str]) -> None:
+
+        component_name = service_component['name']
+        component_version = service_component['version']
+
+        data = self.get_data(service_name, service_component)
+        print(
+            f"Service: {colored(service_name, color='light_grey')}",
+            f"\nComponent: {colored(component_name, color='light_blue')}",
+            f"\nLatest tags: {colored(str(data[component_name]), color='magenta')}",
+            f"\nCurrent version: {colored(component_version, color='cyan')}",
+        )
+
+        if data[component_name][0] > component_version:
+            print(f"New version of {component_name}: {colored(data[component_name][0], color='yellow')}")
+        print()
+
+    async def _async_request(self, client: AsyncClient, url: str) -> dict[str, Any] | None:
+
+        response = await client.get(url)
+        status = response.status_code
+        if status == httpx.codes.OK:
+            return response.json()
+        else:
+            uri = url.replace(self.DOCKERHUB_REGISTRY_API, '').replace(self.DOCKERHUB_API, '')
+            logger.info(f'got response status: {status} for uri: {uri}')
+        return None
 
     def _docker_hub_api_url(self, service_name: str) -> str:
 
@@ -77,75 +193,10 @@ class DockerHubScanner:
         return url
 
     @staticmethod
-    async def _async_request(client: AsyncClient, url: str) -> dict[str, Any] | None:
-
-        response = await client.get(url)
-        status = response.status_code
-        if status == httpx.codes.OK:
-            return response.json()
-        return None
-
-    @staticmethod
     def _get_next_page_and_tags_from_payload(payload: dict[str, Any]) -> tuple[str | None, list[str]]:
         next_page = payload['next']
         names = [release['name'] for release in payload['results']]
         return next_page, names
-
-    async def get_tags(self, service_name: str) -> dict[str, list[str]]:
-        """
-        To make method really async it should be rewritten on pages not by get next page each time.
-        Also, dockerhub protected from bruteforce requests.
-        Better with getting next page each time
-        """
-
-        tags = []
-        url = self._docker_hub_api_url(service_name)
-        transport = AsyncHTTPTransport(retries=1)
-        async with AsyncClient(transport=transport) as client:
-            payload = await self._async_request(client=client, url=url)
-
-            if not payload:
-                return {service_name: tags}
-
-            next_page, names = self._get_next_page_and_tags_from_payload(payload)
-
-            tags.extend(names)
-
-            while SERVICES[service_name] not in tags:
-                payload = await self._async_request(client=client, url=next_page)
-                next_page, names = self._get_next_page_and_tags_from_payload(payload)
-                tags.extend(names)
-
-            # filter tags contains versions 1.18.3 and not contains letters 1.18.3-fpm-alpine. Sort by version number
-            tags = sorted(
-                list(filter(lambda t: re.search(r'\d+\.\d', t) and not re.search(r'[a-z]', t), tags)),
-                reverse=True,
-                key=parse_version,
-            )
-
-            # Do not show older versions than current in tags
-            tags = tags[:tags.index(SERVICES[service_name]) + 1]
-        return {service_name: tags}
-
-    def get_data(self, service_name: str) -> dict[str, list[str]]:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        services_tags = loop.run_until_complete(self.get_tags(service_name))
-
-        return services_tags
-
-    def print_data(self, service_name: str) -> None:
-
-        data = self.get_data(service_name)
-        print(
-            f"Service: {colored(service_name, color='light_grey')}",
-            f"\nTags: {colored(str(data[service_name]), color='magenta')}",
-            f"\nCurrent version: {colored(SERVICES[service_name], color='cyan')}"
-        )
-
-        if data[service_name][0] > SERVICES[service_name]:
-            print(f"New version of {service_name}: {colored(data[service_name][0], color='yellow')}")
-        print()
 
 
 if __name__ == '__main__':
@@ -155,10 +206,16 @@ if __name__ == '__main__':
     dockerhub_scanner = DockerHubScanner()
     processes = []
 
-    for service in SERVICES:
-        process = Process(target=dockerhub_scanner.print_data, kwargs={'service_name': service})
-        processes.append(process)
-        process.start()
+    for service, service_details in SERVICES.items():
+        for component in service_details['components']:
+            if service_details.get('deprecated', False):
+                continue
+            process = Process(
+                target=dockerhub_scanner.print_data,
+                kwargs={'service_name': service, 'service_component': component}
+            )
+            processes.append(process)
+            process.start()
 
     for process in processes:
         process.join()
