@@ -1,16 +1,22 @@
-from sqlalchemy_study.sqlalchemy import Column, Integer, ForeignKey, VARCHAR
-from sqlalchemy_study.sqlalchemy import relation
+from sqlalchemy import VARCHAR, ForeignKey, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.base import BaseModel
 from db.models.department import Department
 
 
 class CadreMovement(BaseModel):
-    __tablename__ = 'cadre_movements'
+    __tablename__ = "cadre_movements"
 
-    employee = Column(Integer, ForeignKey('employees.id', ondelete='CASCADE'), nullable=False, index=True)
-    old_department = Column(Integer, ForeignKey('departments.id', ondelete='CASCADE'), nullable=False, index=True)
-    new_department = Column(Integer, ForeignKey('departments.id', ondelete='CASCADE'), nullable=False, index=True)
-    reason = Column(VARCHAR(500), nullable=True)
+    employee: Mapped[int] = mapped_column(
+        Integer, ForeignKey("employees.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    old_department: Mapped[int] = mapped_column(
+        Integer, ForeignKey("departments.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    new_department: Mapped[int] = mapped_column(
+        Integer, ForeignKey("departments.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    reason: Mapped[str | None] = mapped_column(VARCHAR(500), nullable=True)
 
-    department = relation(Department, foreign_keys=new_department, lazy='select')
+    department = relationship(Department, foreign_keys=new_department, lazy="select")

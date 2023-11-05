@@ -8,7 +8,7 @@ volumes:
 services:
 
   db:
-    image: postgres:14.6
+    image: postgres:16.0
     container_name: "sqlalchemy_study_db"
     hostname: 'db_host'
     restart: unless-stopped

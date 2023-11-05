@@ -2,8 +2,8 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy_study.sqlalchemy import create_async_engine
-from sqlalchemy_study.sqlalchemy import Connection
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.future import Connection
 
 from db.base import BaseModel
 from db.models import load_all_models
@@ -18,7 +18,7 @@ target_metadata = BaseModel.metadata
 load_all_models()
 
 
-async def run_migrations_offline():
+async def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -54,7 +54,7 @@ def do_run_migrations(connection: Connection) -> None:
         context.run_migrations()
 
 
-async def run_migrations_online():
+async def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine

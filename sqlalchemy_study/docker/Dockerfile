@@ -1,5 +1,5 @@
 
-FROM --platform=linux/amd64 python:3.11.1
+FROM --platform=linux/amd64 python:3.11.6
 
 ARG USER
 

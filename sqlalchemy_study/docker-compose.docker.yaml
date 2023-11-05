@@ -33,7 +33,7 @@ services:
       - db
     command: >
       bash -c "/app/scripts/docker-entrypoint.sh
-      && /app/scripts/alembic-init-migrate.sh && python data/fill_data.py
+      && python main.py
       && sleep infinity"
     volumes:
       - ./src:/app/src/

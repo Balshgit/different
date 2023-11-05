@@ -8,7 +8,7 @@ volumes:
 services:
 
   db:
-    image: mysql:8.0.31
+    image: mysql:8.2.0
     platform: linux/amd64
     container_name: "sqlalchemy_study_db"
     hostname: 'db_host'

@@ -1,10 +1,9 @@
 from alembic import command, config as alembic_config
-from sqlalchemy_study.sqlalchemy import MetaData, Table, ForeignKeyConstraint
-from sqlalchemy_study.sqlalchemy import inspect
-from sqlalchemy_study.sqlalchemy import NoSuchTableError
-from sqlalchemy_study.sqlalchemy import DropConstraint
+from sqlalchemy import ForeignKeyConstraint, MetaData, Table, inspect, text
+from sqlalchemy.exc import NoSuchTableError
+from sqlalchemy.schema import DropConstraint
 
-from db.dependencies import sync_engine
+from db.dependencies import get_sync_db_session, sync_engine
 from db.meta import meta
 from db.models import load_all_models
 from settings import settings
@@ -25,17 +24,17 @@ def remove_foreign_keys() -> None:
         fks = []
         try:
             for fk in inspector.get_foreign_keys(table_name):
-                if fk['name']:
-                    fks.append(ForeignKeyConstraint((), (), name=fk['name']))
+                if fk["name"]:
+                    fks.append(ForeignKeyConstraint((), (), name=fk["name"]))
         except NoSuchTableError:
-            logger.error(f'Table {table_name} not exist')
-        t = Table(table_name, fake_metadata, *fks)
-        fake_tables.append(t)
+            logger.error(f"Table {table_name} not exist")
+        table = Table(table_name, fake_metadata, *fks)
+        fake_tables.append(table)
         all_fks.extend(fks)
     connection = sync_engine.connect()
     transaction = connection.begin()
     for fkc in all_fks:
-        connection.execute(DropConstraint(fkc))
+        connection.execute(DropConstraint(fkc))  # type: ignore
     transaction.commit()
 
 
@@ -43,14 +42,14 @@ def drop_tables() -> None:
     load_all_models()
     remove_foreign_keys()
     meta.drop_all(bind=sync_engine, checkfirst=True)
-    sync_engine.execute('DROP TABLE IF EXISTS alembic_version')
-    sync_engine.dispose()
+    session = get_sync_db_session()
+    session.execute(text("DROP TABLE IF EXISTS alembic_version;"))
     logger.info("All tables are dropped")
 
 
 def run_migrations() -> None:
     with sync_engine.begin() as connection:
-        alembic_cfg.attributes['connection'] = connection
-        migration_dialect = 'mysql_init_migrations' if settings.USE_DATABASE == 'mysql' else 'postgres_init_migrations'
+        alembic_cfg.attributes["connection"] = connection
+        migration_dialect = "mysql_init_migrations" if settings.USE_DATABASE == "mysql" else "postgres_init_migrations"
         command.upgrade(alembic_cfg, migration_dialect)
-    logger.info('Tables recreated')
+    logger.info("Tables recreated")

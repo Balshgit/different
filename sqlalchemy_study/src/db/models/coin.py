@@ -1,8 +1,7 @@
-from sqlalchemy_study.sqlalchemy import VARCHAR
-from sqlalchemy_study.sqlalchemy import relationship
-from sqlalchemy_study.sqlalchemy import Column
-from sqlalchemy_study.sqlalchemy import ForeignKey
-from sqlalchemy_study.sqlalchemy import Integer, BOOLEAN
+from sqlalchemy import VARCHAR
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql.schema import ForeignKey
+from sqlalchemy.sql.sqltypes import BOOLEAN, Integer
 
 from db.base import BaseModel
 
@@ -12,17 +11,18 @@ class Coin(BaseModel):
 
     __tablename__ = "coins"
 
-    name = Column('coin_name', VARCHAR(50), unique=True)
-    enabled = Column('enabled', BOOLEAN)
+    name: Mapped[str] = mapped_column("coin_name", VARCHAR(50), unique=True)
+    enabled: Mapped[bool] = mapped_column("enabled", BOOLEAN, default=True)
 
-    coin_type_id = relationship("CoinType",
-                                primaryjoin="Coin.id == CoinType.coin_id",
-                                back_populates='coin',
-                                uselist=False,
-                                viewonly=True,
-                                lazy="raise",
-                                )
-    employee = relationship('Employee', back_populates='coin')
+    coin_type_id = relationship(
+        "CoinType",
+        primaryjoin="Coin.id == CoinType.coin_id",
+        back_populates="coin",
+        uselist=False,
+        viewonly=True,
+        lazy="raise",
+    )
+    employee = relationship("Employee", back_populates="coin")
 
 
 class CoinType(BaseModel):
@@ -30,6 +30,6 @@ class CoinType(BaseModel):
 
     __tablename__ = "coin_types"
 
-    name = Column('coin_name', VARCHAR(50))
-    coin_id = Column(Integer, ForeignKey('coins.id', ondelete='CASCADE'))
-    coin = relationship(Coin, back_populates='coin_type_id')
+    name: Mapped[str] = mapped_column("coin_name", VARCHAR(50))
+    coin_id: Mapped[int] = mapped_column(Integer, ForeignKey("coins.id", ondelete="CASCADE"))
+    coin = relationship(Coin, back_populates="coin_type_id")

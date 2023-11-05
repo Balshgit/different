@@ -2,23 +2,28 @@ from asyncio import current_task
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from sqlalchemy_study.sqlalchemy import create_engine
-from sqlalchemy_study.sqlalchemy import create_async_engine, AsyncSession, async_scoped_session, AsyncEngine
-from sqlalchemy_study.sqlalchemy import sessionmaker, Session
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_scoped_session,
+    create_async_engine,
+)
+from sqlalchemy.orm import Session, sessionmaker
 
 from settings import settings
 
 async_engine: AsyncEngine = create_async_engine(str(settings.async_db_url), echo=settings.DB_ECHO)
 async_session_factory = async_scoped_session(
-            sessionmaker(
-                autocommit=False,
-                autoflush=False,
-                class_=AsyncSession,
-                expire_on_commit=False,
-                bind=async_engine,
-            ),
-            scopefunc=current_task,
-        )
+    sessionmaker(  # type: ignore
+        autocommit=False,
+        autoflush=False,
+        class_=AsyncSession,
+        expire_on_commit=False,
+        bind=async_engine,
+    ),
+    scopefunc=current_task,
+)
 
 
 sync_engine = create_engine(settings.sync_db_url, echo=settings.DB_ECHO)
@@ -29,9 +34,9 @@ def get_sync_db_session() -> Session:
     session: Session = sync_session_factory()
     try:
         return session
-    except Exception as err:
+    except Exception:
         session.rollback()
-        raise err
+        raise
     finally:
         session.commit()
         session.close()
@@ -48,9 +53,9 @@ async def get_async_db_session() -> AsyncGenerator[AsyncSession, None]:
     session = async_session_factory()
     try:
         yield session
-    except Exception as err:
+    except Exception:
         await session.rollback()
-        raise err
+        raise
     finally:
         await session.commit()
         await session.close()

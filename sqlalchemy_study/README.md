@@ -1,4 +1,4 @@
-# SQLALCHEMY STUDY
+# SQLALCHEMY v2 queries STUDY
 
 ---
 
@@ -16,11 +16,11 @@ cp ./src/config/.env.template ./src/config/.env
 
 *Note: Change USE_DATABASE variable to 'mysql' for MySQL training or 'postgres' for Postgres use.*
 
-*Default is MySQL*
+*Default is Postgres*
 
 ## Run without app in docker:
 
-Requires python > 3.11 and poetry 1.3.1
+Requires python >= 3.11 and poetry >= 1.3.1
 
 - **install poetry dependencies:**
 ```bash
@@ -28,21 +28,25 @@ poetry install
 poetry shell
 ```
 
-- **run for mysql:** ```docker-compose -f docker-compose.mysql.yaml up```
+- **run for mysql:** ```docker compose -f docker-compose.mysql.yaml up```
 
-- **run for postgres:** ```docker-compose -f docker-compose.postgres.yaml up```
+- **run for postgres:** ```docker compose -f docker-compose.postgres.yaml up```
 
-- **run initial data:** ```python ./src/data/fill_data.py```
+- **run initial data:** 
+```bash
+cd src
+python /data/fill_data.py
+```
 
 ## Run all in docker:
 
 **run for mysql:**
 ```bash
-docker-compose -f docker-compose.mysql.yaml -f docker-compose.docker.yaml up
+docker compose -f docker-compose.mysql.yaml -f docker-compose.docker.yaml up
 ```
 **run for postgres:**
 ```bash
-docker-compose -f docker-compose.postgres.yaml -f docker-compose.docker.yaml up
+docker compose -f docker-compose.postgres.yaml -f docker-compose.docker.yaml up
 ```
 *Note: docker will start all migrations automatically. You don't need creation data step*
 
@@ -97,7 +101,8 @@ docker exec -it sqlalchemy_study_db psql -d sqlalchemy_study -U balsh
 
 ## Clean database
 ```bash
-docker-compose -f docker-compose.mysql.yaml down -v
+docker compose -f docker-compose.mysql.yaml down -v
+docker compose -f docker-compose.postgres.yaml down -v
 ```
 
 ## Known issues:
