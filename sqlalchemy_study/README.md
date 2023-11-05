@@ -18,7 +18,7 @@ cp ./src/config/.env.template ./src/config/.env
 
 *Default is Postgres*
 
-## Run without app in docker:
+## Manual fill database with data:
 
 Requires python >= 3.11 and poetry >= 1.3.1
 
@@ -35,10 +35,10 @@ poetry shell
 - **run initial data:** 
 ```bash
 cd src
-python /data/fill_data.py
+python data/fill_data.py
 ```
 
-## Run all in docker:
+## Fill database with full docker script:
 
 **run for mysql:**
 ```bash
@@ -49,6 +49,12 @@ docker compose -f docker-compose.mysql.yaml -f docker-compose.docker.yaml up
 docker compose -f docker-compose.postgres.yaml -f docker-compose.docker.yaml up
 ```
 *Note: docker will start all migrations automatically. You don't need creation data step*
+
+## Traininq queries:
+
+```bash
+python data/get_data.py
+```
 
 ## Help info:
 
