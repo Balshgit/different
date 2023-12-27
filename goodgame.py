@@ -1,6 +1,7 @@
 import asyncio
 import sys
 import time
+import timeit
 from logging import Logger
 from multiprocessing import Process
 from typing import Any
@@ -185,17 +186,6 @@ if __name__ == '__main__':
     good_game = GoodGame()
     start = time.time()
     good_game.async_counter()
-    # async_process = Process(
-    #     target=good_game.async_counter, args=(), kwargs={}, name='async_process'
-    # )
-    # sync_process = Process(
-    #     target=good_game.sync_counter, args=(), kwargs={}, name='sync_process'
-    # )
-
-    # sync_process.start()
-    # async_process.start()
-    # sync_process.join()
-    # async_process.join()
 
     stop = time.time()
     logger.info(f'End all processes. Execution time: {round(stop-start, 2)} seconds')

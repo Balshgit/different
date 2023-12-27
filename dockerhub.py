@@ -13,42 +13,42 @@ from termcolor import colored
 SERVICES: dict[str: dict[str, Any]] = {
     'general': {
         'components': [
-            {'name': 'caddy', 'version': '2.7.5'},
-            {'name': 'python', 'version': '3.11.5'},
+            {'name': 'caddy', 'version': '2.7.6'},
+            {'name': 'python', 'version': '3.12.1'},
         ]
     },
     'nextcloud': {
         'components': [
-            {'name': 'nextcloud', 'version': '27.1.2'},
-            {'name': 'mysql', 'version': '8.1.0'},
-            {'name': 'redis', 'version': '7.2.1'},
-            {'name': 'nginx', 'version': '1.25.2'},
-            {'name': 'onlyoffice/documentserver', 'version': '7.3.3.50'},
+            {'name': 'nextcloud', 'version': '28.0.1'},
+            {'name': 'mysql', 'version': '8.2.0'},
+            {'name': 'redis', 'version': '7.2.3'},
+            {'name': 'nginx', 'version': '1.25.3'},
+            {'name': 'onlyoffice/documentserver', 'version': '7.5.1.1'},
         ],
     },
     'gitea': {
         'components': [
-            {'name': 'gitea/gitea', 'version': '1.20.5'},
-            {'name': 'postgres', 'version': '15.4'},
+            {'name': 'gitea/gitea', 'version': '1.21.3'},
+            {'name': 'postgres', 'version': '16.1'},
         ],
     },
     'mediawiki': {
         'components': [
-            {'name': 'mediawiki', 'version': '1.40.1'},
-            {'name': 'mariadb', 'version': '11.1.2'},
+            {'name': 'mediawiki', 'version': '1.41.0'},
+            {'name': 'mariadb', 'version': '11.2.2'},
         ],
     },
     'bitwarden': {
         'components': [
-            {'name': 'bitwarden/web', 'version': '2023.9.1'},
-            {'name': 'bitwarden/server', 'version': '2023.9.0'},
+            {'name': 'bitwarden/web', 'version': '2023.12.0'},
+            {'name': 'bitwarden/server', 'version': '2023.12.0'},
         ],
     },
     'mosgortrans': {
-        'deprecated': True,
+        'deprecated': False,
         'components': [
-            {'name': 'selenoid/chrome', 'version': '111.0'},
-            {'name': 'aerokube/selenoid', 'version': '1.10.10'},
+            {'name': 'selenoid/chrome', 'version': '119.0'},
+            {'name': 'aerokube/selenoid', 'version': '1.11.0'},
         ],
     },
 }
@@ -140,11 +140,12 @@ class DockerHubScanner:
             # Do not show older versions than current in tags
             try:
                 tags = tags[:tags.index(component_version) + 1]
+                if len(tags) > 5:
+                    tags = tags[:5]
             except ValueError:
                 tags = tags[:3]
                 logger.error(
-                    f"cant find tag {component_version} for service {service_name}"
-                    f"for component {component_name}"
+                    f"Cant find tag {component_version} for service {service_name} for component {component_name}"
                 )
         return {component_name: tags}
 
@@ -155,24 +156,23 @@ class DockerHubScanner:
 
         return services_tags
 
-    def print_data(self, service_name: str, service_component: dict[str, str], lock: Lock) -> None:
+    def print_data(self, service_name: str, service_component: dict[str, str]) -> None:
 
         component_name = service_component['name']
         component_version = service_component['version']
 
         data = self.get_data(service_name, service_component)
 
-        with lock:
-            print(
-                f"Service: {colored(service_name, color='light_grey')}",
-                f"\nComponent: {colored(component_name, color='light_blue')}",
-                f"\nLatest tags: {colored(str(data[component_name]), color='magenta')}",
-                f"\nCurrent version: {colored(component_version, color='cyan')}",
-            )
+        print(
+            f"Service: {colored(service_name, color='light_grey')}",
+            f"\nComponent: {colored(component_name, color='light_blue')}",
+            f"\nLatest tags: {colored(str(data[component_name]), color='magenta')}",
+            f"\nCurrent version: {colored(component_version, color='cyan')}",
+        )
 
-            if data[component_name][0] > component_version:
-                print(f"New version of {component_name}: {colored(data[component_name][0], color='yellow')}")
-            print()
+        if data[component_name][0] > component_version:
+            print(f"New version of {component_name}: {colored(data[component_name][0], color='yellow')}")
+        print()
 
     async def _async_request(self, client: AsyncClient, url: str) -> dict[str, Any] | None:
 
@@ -203,26 +203,28 @@ class DockerHubScanner:
 
 if __name__ == '__main__':
 
+    print()
     print(colored('Services'.center(50, '-', ), color='white'), '\n')
 
-    global_lock = Lock()
+    lock = Lock()
 
     dockerhub_scanner = DockerHubScanner()
     processes = []
 
-    for service, service_details in SERVICES.items():
-        for component in service_details['components']:
-            if service_details.get('deprecated', False):
-                continue
-            process = Process(
-                target=dockerhub_scanner.print_data,
-                kwargs={'service_name': service, 'service_component': component, 'lock': global_lock}
-            )
-            processes.append(process)
-            process.start()
+    with lock:
+        for service, service_details in SERVICES.items():
+            for component in service_details['components']:
+                if service_details.get('deprecated', False):
+                    continue
+                process = Process(
+                    target=dockerhub_scanner.print_data,
+                    kwargs={'service_name': service, 'service_component': component}
+                )
+                processes.append(process)
+                process.start()
 
-        for process in processes:
-            process.join()
+            for process in processes:
+                process.join()
 
-    print(colored("All jobs done", color='white'))
+    print(colored("All jobs done", color='white'), '\n')
 
