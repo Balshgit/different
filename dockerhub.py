@@ -47,8 +47,8 @@ SERVICES: dict[str: dict[str, Any]] = {
     'mosgortrans': {
         'deprecated': False,
         'components': [
-            {'name': 'selenoid/chrome', 'version': '119.0'},
-            {'name': 'aerokube/selenoid', 'version': '1.11.0'},
+            {'name': 'selenoid/chrome', 'version': '120.0'},
+            {'name': 'aerokube/selenoid', 'version': '1.11.1'},
         ],
     },
 }

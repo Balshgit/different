@@ -41,9 +41,11 @@ logger = configure_logger()
 
 
 class GoodGame:
-    BASE_URL = 'https://goodgame.ru/api/4/streams'
+    BASE_URL = 'https://goodgame.ru'
+    API_URL = BASE_URL + '/api/4/streams'
     PAGES_FOR_ASYNC_SCAN = 25
     CURRENT_WATCHERS_FILTER = 1
+    INTERESTING_STREAMERS = ('snowboy', 'hell_girl', )
 
     def __init__(self) -> None:
         self.all_streams: dict[int, dict[str, Any]] = dict()
@@ -67,8 +69,8 @@ class GoodGame:
         Deprecated
         """
         last_page = 1
-        for page in range(20, 0, -1):
-            response = requests.get(f'{self.BASE_URL}?page={page}')
+        for page in range(self.PAGES_FOR_ASYNC_SCAN, 0, -1):
+            response = requests.get(f'{self.API_URL}?page={page}')
             if response.json()["streams"]:
                 last_page = page
                 break
@@ -78,7 +80,7 @@ class GoodGame:
         """
         Deprecated
         """
-        response = requests.get(f'{self.BASE_URL}?page=1')
+        response = requests.get(f'{self.API_URL}?page=1')
         max_current_viewers = response.json()['streams'][0].get('viewers', None)
         return max_current_viewers
 
@@ -114,14 +116,22 @@ class GoodGame:
         watchers_0 = self.__count_streams_with_watchers(current_watchers=[0])
         watchers_1 = self.__count_streams_with_watchers(current_watchers=[1])
         minimal_watchers = self.__count_streams_with_watchers(current_watchers=[0, 1])
+        trimmed_streams = self._sort_trim_dict(total_viewers)
         return (
             f'Total streams: {len(self.all_streams)} -> '
             f'with minimal watchers {round(minimal_watchers / len(self.all_streams) * 100)}%\n'
             f'Total streams with 0 viewers: {watchers_0} -> {round(watchers_0/len(self.all_streams) * 100)}%\n'
             f'Total streams with 1 viewer: {watchers_1} -> {round(watchers_1/len(self.all_streams) * 100)}%\n'
             f'Total viewers: {sum(total_viewers.values())}\n'
-            f'Streams: {self._sort_trim_dict(total_viewers)}\n'
-            f'{"-"*76}'
+            f'Streams: {trimmed_streams}\n'
+            f'Interesting streams: '
+            f'{
+                {
+                    stream: viewers for stream, viewers in trimmed_streams.items()
+                    if any([True for streamer in self.INTERESTING_STREAMERS if streamer in stream.lower()])
+                }
+            }\n'
+            f'{"-" * 76}'
         )
 
     async def _async_request(self, session: aiohttp.ClientSession, url: str) -> None:
@@ -148,7 +158,7 @@ class GoodGame:
 
             streams = await asyncio.gather(
                 *[
-                    self._async_request(session, f'{self.BASE_URL}?page={page}')
+                    self._async_request(session, f'{self.API_URL}?page={page}')
                     for page in range(1, self.PAGES_FOR_ASYNC_SCAN + 1)
                 ],
                 return_exceptions=True,
@@ -167,14 +177,14 @@ class GoodGame:
     def sync_counter(self) -> str:
         page = 1
 
-        response = requests.get(f'{self.BASE_URL}?page={page}', timeout=2)
+        response = requests.get(f'{self.API_URL}?page={page}', timeout=2)
         streams = response.json()['streams']
         for stream in streams:
             self.all_streams.update({stream['id']: stream})
         max_current_viewers = streams[0]['viewers']
         while streams:
             page += 1
-            response = requests.get(f'{self.BASE_URL}?page={page}')
+            response = requests.get(f'{self.API_URL}?page={page}', timeout=2)
             streams = response.json()['streams']
             for stream in streams:
                 self.all_streams.update({stream['id']: stream})
@@ -188,4 +198,4 @@ if __name__ == '__main__':
     good_game.async_counter()
 
     stop = time.time()
-    logger.info(f'End all processes. Execution time: {round(stop-start, 2)} seconds')
+    logger.info(f'End all processes. Execution time: {round(stop - start, 2)} seconds')
