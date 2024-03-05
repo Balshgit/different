@@ -14,41 +14,41 @@ SERVICES: dict[str: dict[str, Any]] = {
     'general': {
         'components': [
             {'name': 'caddy', 'version': '2.7.6'},
-            {'name': 'python', 'version': '3.12.1'},
+            {'name': 'python', 'version': '3.12.2'},
         ]
     },
     'nextcloud': {
         'components': [
-            {'name': 'nextcloud', 'version': '28.0.1'},
-            {'name': 'mysql', 'version': '8.2.0'},
-            {'name': 'redis', 'version': '7.2.3'},
-            {'name': 'nginx', 'version': '1.25.3'},
-            {'name': 'onlyoffice/documentserver', 'version': '7.5.1.1'},
+            {'name': 'nextcloud', 'version': '28.0.3'},
+            {'name': 'mysql', 'version': '8.3.0'},
+            {'name': 'redis', 'version': '7.2.4'},
+            {'name': 'nginx', 'version': '1.25.4'},
+            {'name': 'onlyoffice/documentserver', 'version': '8.0.1.1'},
         ],
     },
     'gitea': {
         'components': [
-            {'name': 'gitea/gitea', 'version': '1.21.3'},
-            {'name': 'postgres', 'version': '16.1'},
+            {'name': 'gitea/gitea', 'version': '1.21.7'},
+            {'name': 'postgres', 'version': '16.2'},
         ],
     },
     'mediawiki': {
         'components': [
             {'name': 'mediawiki', 'version': '1.41.0'},
-            {'name': 'mariadb', 'version': '11.2.2'},
+            {'name': 'mariadb', 'version': '11.3.2'},
         ],
     },
     'bitwarden': {
         'components': [
-            {'name': 'bitwarden/web', 'version': '2023.12.0'},
-            {'name': 'bitwarden/server', 'version': '2023.12.0'},
+            {'name': 'bitwarden/web', 'version': '2024.2.2'},
+            {'name': 'bitwarden/server', 'version': '2024.2.2'},
         ],
     },
     'mosgortrans': {
         'deprecated': False,
         'components': [
-            {'name': 'selenoid/chrome', 'version': '120.0'},
-            {'name': 'aerokube/selenoid', 'version': '1.11.1'},
+            {'name': 'selenoid/chrome', 'version': '121.0'},
+            {'name': 'aerokube/selenoid', 'version': '1.11.2'},
         ],
     },
 }
